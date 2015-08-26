@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.js"></script>
+
+<body ng-app="Ants"  ng-controller="antsCtrl">
+
+	<div> 
+		<canvas width="1280" height="720"> </canvas>
+	</div>
+	<div>
+		<p> There are <span ng-bind="count"></span> colonies remaining. </p> 
+		<ul>
+			<li ng-repeat="t in teams">
+				<span style="color:{{t.color}}"> {{t.name + '-----> Hills:' + t.hills.length + ' Ants: ' + t.ants.length}} </span>
+				<ul>
+					<li ng-repeat="h in t.hills"> <span style="color:{{t.color}}"> {{'Hill----> Supply: '+ h.supply + '|| @: ' + h.x + ',' + h.y}} </span> </li> 
+				</ul>
+				<ul>
+					<li ng-repeat="a in t.ants"> <span style="color:{{t.color}}"> {{'Ant----> Type: ' + a.type + '|| Life:'+ a.hitpoints+ '|| @: ' + a.x + ',' + a.y}} </span> </li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+
+</body>
+
+<script src="antObjects.js"></script>
+</html>
