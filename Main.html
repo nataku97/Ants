@@ -5,10 +5,10 @@
 <body ng-app="Ants"  ng-controller="antsCtrl">
 
 	<div> 
-		<canvas width="1280" height="720"> </canvas>
+		<canvas id="worldCan" ng-bind="world" width="1280" height="720"> </canvas>
 	</div>
 	<div>
-		<p> There are <span ng-bind="count"></span> colonies remaining. </p> 
+		<p> There are <span ng-bind="count"></span> colonies remaining. <button onclick="canvasPen.drawAnts()">Draw?</button> </p> 
 		<ul>
 			<li ng-repeat="t in teams">
 				<span style="color:{{t.color}}"> {{t.name + '-----> Hills:' + t.hills.length + ' Ants: ' + t.ants.length}} </span>
@@ -23,6 +23,6 @@
 	</div>
 
 </body>
-
+<script src="antDraw.js"></script>
 <script src="antObjects.js"></script>
 </html>

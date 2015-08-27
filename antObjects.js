@@ -1,8 +1,51 @@
+var AntsApp = angular.module('Ants', []);
+
+AntsApp.service('antsSvcs', function() {
+	var pt = {x: 0, y: 0};
+
+	this.getPT = function (w, h) {
+		pt.x = ((-w) + Math.floor(Math.random() * (w + w) ) );
+		pt.y = ((-h) + Math.floor(Math.random() * (h + h) ) );
+
+		return pt; 
+	};
+
+});
+
+
+AntsApp.service('imgSupplier', function() {
+	this.colorAntImage = function(img, cr) {
+		return colorAntImage( new Image(img), cr);
+	};
+
+	this.prepTeamAssets = function(cr) {
+		return ({ w: this.colorAntImage('ant_worker.png', cr), 
+				 s: this.colorAntImage('ant_soldier.png', cr),
+				 q: this.colorAntImage('ant_queen.png', cr),
+				 e: null });
+	};
+
+});
+
+AntsApp.service('canvasPen', function() {
+
+	this.drawAnt = function(ant, team) {
+		drawImage(world.getContext('2d'), ant.x, ant.y, team.color);
+	};
+
+	this.drawAnts = function() {
+		for (i = 0; i < teams.length; i++) {
+			for (k = 0; k < teams[i].ants.length; k++) {
+				this.drawAnt(teams[i].ants[k], team[i] );
+			}
+		}
+	};
+
+});
+
 /*
 	This file defines object classes for ant simulation.
 */
-var AntsApp = angular.module('Ants', []);
-
 AntsApp.factory(
 	"Ant", function () {
 
@@ -116,7 +159,7 @@ AntsApp.factory(
 );
 
 AntsApp.factory( 
-	"Colony", ['Hill', 'Ant', function(Hill, Ant) {
+	"Colony", ['Hill', 'Ant', 'imgSupplier', function(Hill, Ant, imgSup) {
 		function Colony(n, cr, pt) {
 			this.name = n;
 			this.color = cr;
@@ -126,6 +169,7 @@ AntsApp.factory(
 						 new Ant('w', 1, pt),
 						 new Ant('w', 1, pt),
 						 new Ant('w', 1, pt)];
+			this.assets = imgSup.prepTeamAssets(this.color);
 		}
 
 		Colony.prototype = {
@@ -134,25 +178,17 @@ AntsApp.factory(
 			hills: function() { return(this.hills); },
 			hill: function(i) { return(this.hills[i]); },
 			ants: function() { return(this.ants); },
-			ant: function(i) { return(this.ants[i]); }
+			ant: function(i) { return(this.ants[i]); },
+			getAsset: function(n) { if (n == 'e') { return (this.assets.e); }
+									else if (n == 'w') { return (this.assets.w); }
+									else if (n == 's') { return (this.assets.s); }
+									else if (n == 'q') { return (this.assets.e); }
+								  }
 		};
 
 		return( Colony );
 	} 
 ]); 
-
-
-AntsApp.service('antsSvcs', function() {
-	var pt = {x: 0, y: 0};
-
-	this.getPT = function (w, h) {
-		pt.x = ((-w) + Math.floor(Math.random() * (w + w) ) );
-		pt.y = ((-h) + Math.floor(Math.random() * (h + h) ) );
-
-		return pt; 
-	};
-
-});
 
 /*
 	This initialized the app data for ant simulation.
@@ -164,5 +200,6 @@ AntsApp.controller('antsCtrl', [ 'Colony', 'Hill', 'Ant', 'antsSvcs', '$scope', 
 					 new Colony('Gold', '#FFD700', antsSvcs.getPT(1280, 720)) ];
 	$scope.count = '4';
 	$scope.viewWidth = 1280;
-	$scope.viewHieght = 720;
+	$scope.viewHeight = 720;
+	$scope.world;
 }]);
