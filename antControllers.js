@@ -17,6 +17,7 @@ angular.module('Ants').controller('AntsCtrl', [ 'Colony', 'Hill', 'Ant', 'locSup
 	
 	this.count = function () { return this.teams.length; };
 	this.init = function() { canvasPen.initBuffer(); };
+	
 	this.draw = function() { canvasPen.drawAnts(this.world, this.teams); };
 	this.update = function() { universalLogic.update(this.teams); };
 	this.step = function() { 

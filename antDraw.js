@@ -1,5 +1,4 @@
-function colorAntImage(img, cr) {
-		
+function applyScaleAndColorToImage(img, cr, s) {
 	color = hexToRgb(cr);
 
 	var canvas = document.createElement("canvas");
@@ -7,8 +6,8 @@ function colorAntImage(img, cr) {
 
 	var imgW = img.width;
 	var imgH = img.height;
-	var scaleW = imgW/6;
-	var scaleH = imgH/6;
+	var scaleW = imgW * s;
+	var scaleH = imgH * s;
 	canvas.width = scaleW;
 	canvas.height = scaleH;
 
@@ -45,47 +44,15 @@ function colorAntImage(img, cr) {
 	return canvas;
 }
 
-function colorHillImage(img, cr) {
-		
-	color = hexToRgb(cr);
+function prepAntImage(img, cr) {
+	//one sixth size
+	return applyScaleAndColorToImage(img, cr, (1.0/6));
+}
 
-	var canvas = document.createElement("canvas");
-	var ctx = canvas.getContext('2d');
-
-	var imgW = img.width;
-	var imgH = img.height;
-	canvas.width = imgW;
-	canvas.height = imgH;
-
-	ctx.drawImage(img, 0, 0, imgW, imgH);
-
-	var imgPixels = ctx.getImageData(0, 0, imgW, imgH);
-
-	for (y = 0; y < imgPixels.height; y++) {
-		for (x = 0; x < imgPixels.width; x++) {
-			var i = (y*4) * imgPixels.width + x * 4;
-			var r = imgPixels.data[i];
-			var g = imgPixels.data[i+1];
-			var b = imgPixels.data[i+2];
-			var a = imgPixels.data[i+3];
-
-			if (r == g && g == b && r >= 32) {
-				scale = r/255;
-
-				r = (color.r * scale);
-				g = (color.g * scale);
-				b = (color.b * scale);
-
-				imgPixels.data[i] = r;
-				imgPixels.data[i+1] = g;
-				imgPixels.data[i+2] = b;
-			}
-		}
-	}
-
-	ctx.putImageData(imgPixels, 0, 0);
-
-	return canvas;
+function prepHillImage(img, cr) {
+	//full size for now 
+	//TODO: "JOOOHNNN plaz draw me ant hills".
+	return applyScaleAndColorToImage(img, cr, 1);
 }
 
 function drawImage(canv, x, y, r, i) {

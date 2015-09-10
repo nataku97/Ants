@@ -42,14 +42,14 @@ angular.module('Ants').service('imgSupplier', function() {
 		hillImg = new Image(70,50);
 		hillImg.crossOrigin = "anonymous"
 		hillImg.onload = function () {
-			team.setAsset('h', colorHillImage(hillImg, color) );
+			team.setAsset('h', prepHillImage(hillImg, color) );
 		}
 		hillImg.src = "ant_hill.png";
 
 		workerImg = new Image(100,100);
 		workerImg.crossOrigin = "anonymous";
 		workerImg.onload = function () {
-			team.setAsset('w', colorAntImage(workerImg, color) );
+			team.setAsset('w', prepAntImage(workerImg, color) );
 		}
 		workerImg.src = "ant_worker.png";
 		
@@ -57,7 +57,7 @@ angular.module('Ants').service('imgSupplier', function() {
 		soldierImg = new Image(125,100);
 		soldierImg.crossOrigin = "anonymous";
 		soldierImg.onload = function () {
-			team.setAsset('s', colorAntImage(soldierImg, color) );
+			team.setAsset('s', prepAntImage(soldierImg, color) );
 		}
 		soldierImg.src = "ant_soldier.png";
 		
@@ -65,7 +65,7 @@ angular.module('Ants').service('imgSupplier', function() {
 		queenImg = new Image(200, 200);
 		queenImg.crossOrigin = "anonymous";
 		queenImg.onload = function () {
-			team.setAsset('q', colorAntImage(queenImg, color) );
+			team.setAsset('q', prepAntImage(queenImg, color) );
 		}
 		queenImg.src = "ant_queen.png";
 
