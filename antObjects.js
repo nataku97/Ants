@@ -1,53 +1,8 @@
-var AntsApp = angular.module('Ants', []);
-
-AntsApp.service('antsSvcs', function() {
-	var pt = {x: 0, y: 0};
-
-	this.getPT = function (w, h) {
-		pt.x = ((-w) + Math.floor(Math.random() * (w + w) ) );
-		pt.y = ((-h) + Math.floor(Math.random() * (h + h) ) );
-
-		return pt; 
-	};
-
-});
-
-
-AntsApp.service('imgSupplier', function() {
-	this.colorAntImage = function(img, cr) {
-		return colorAntImage( new Image(img), cr);
-	};
-
-	this.prepTeamAssets = function(cr) {
-		return ({ w: this.colorAntImage('ant_worker.png', cr), 
-				 s: this.colorAntImage('ant_soldier.png', cr),
-				 q: this.colorAntImage('ant_queen.png', cr),
-				 e: null });
-	};
-
-});
-
-AntsApp.service('canvasPen', function() {
-
-	this.drawAnt = function(ant, team) {
-		drawImage(world.getContext('2d'), ant.x, ant.y, team.color);
-	};
-
-	this.drawAnts = function() {
-		for (i = 0; i < teams.length; i++) {
-			for (k = 0; k < teams[i].ants.length; k++) {
-				this.drawAnt(teams[i].ants[k], team[i] );
-			}
-		}
-	};
-
-});
-
 /*
 	This file defines object classes for ant simulation.
 */
-AntsApp.factory(
-	"Ant", function () {
+angular.module('Ants').factory(
+	"Ant", ['locSupplier', 'antIndependantIntelligence', function (locSupply, aii) {
 
 		function Ant(t, hp, pt) {
 			this.type = t;
@@ -60,12 +15,19 @@ AntsApp.factory(
 				this.live = true;
 			}
 
-			this.x = Math.floor(pt.x + ((-10) + Math.random() * (20)));
-			this.y = Math.floor(pt.y + ((-10) + Math.random() * (20)));
+			var start = locSupply.getAntSpawn(pt);
+
+			this.x = start.x;
+			this.y = start.y;
+			this.dir = start.r;
 		}
 
 		Ant.prototype = {
-			type: function() { return (this.type); },
+			getType: function() { 
+				if (this.type == 'w') {return 'worker';}
+				else if (this.type == 's') {return 'soldier'; }
+				else if (this.type == 'q') {return 'queen'; }
+ 				else if (this.type == 'e') {return 'egg';} },
 			HP: function() { return (this.hitpoints); },
 			x: function() { return (this.x); },
 			y: function() { return (this.y); },
@@ -81,9 +43,25 @@ AntsApp.factory(
 					this.hitpoints = this.hitpoints + h;
 				}
 			},
-			move: function(nx, ny) {
-				this.x = nx;
-				this.y = ny;
+			moveForward: function() {
+				this.x -= 5*(Math.cos(this.dir)/8);
+				this.y -= 5*(Math.sin(this.dir)/8);
+			},
+			moveBackward: function() {
+				this.x += Math.cos(this.dir)/2;
+				this.y += Math.cos(this.dir)/2;
+			},
+			turnLeft: function() {
+				this.dir -= 0.025;
+				if (this.dir < 0) {
+					this.dir = Math.PI - 0.1;
+				} 
+			},
+			turnRight: function() {
+				this.dir += 0.025;
+				if (this.dir >= (2*Math.PI)) {
+					this.dir = 0;
+				} 
 			},
 			hatch: function() {
 				if (this.type == 'e') {
@@ -98,15 +76,40 @@ AntsApp.factory(
 						this.hitpoinrs = 3;
 					}
 				}
+			},
+			update: function() {
+				//TODO hatch, change start, other advanced things >_<
+				var mode = aii.getMode();
+
+				if (mode == 'wonder') {
+					var d = aii.getDirection();
+
+					if (d == 'forward') {
+						this.moveForward();
+					}
+					else if (d == 'back') {
+						this.moveBackward();
+					}
+					else if (d == 'left') {
+						this.turnLeft();
+					}
+					else if (d == 'right') {
+						this.turnRight();
+					}
+				}
+				else
+				{
+					;
+				}
 			}
 
 		};
 
 		return ( Ant );
 	}
-);
+]);
 
-AntsApp.factory(
+angular.module('Ants').factory(
 	"Hill", function () {
 
 		function Hill(c, s, sx, sy) {
@@ -116,23 +119,6 @@ AntsApp.factory(
 			this.y = sy;
 		}
 
-		/*function Hill(c, s) {
-			this.colony = c;
-			this.supply = s;
-			
-			var quadX = 1;
-			var quadY = 1;
-			if (Math.random < 0.51) {
-				quadX = -1;
-			}
-			if (Math.random < 0.51) {
-				quadY = -1;
-			}
-
-			this.x = Math.random * 800 * quadX;
-			this.y = Math.random * 600 * quadY;
-		}*/
-
 		Hill.prototype = {
 			team: function() { return(this.colony); },
 			supply: function() { return(this.supply); },
@@ -141,15 +127,8 @@ AntsApp.factory(
 			useSupply: function(x) {this.supply = this.supply - x;},
 			produceEgg: function(t) {
 				if (this.supply%t.population > 0 ) {
-					var xmod = Math.random * 10;
-					var ymod = Math.random * 10;
-					 if (Math.random > 0.5) {
-					 	xmod = xmod*-1;
-					 }
-					 if (Math.random > 0.5) {
-					 	ymod = ymod*-1;
-					 }
-					t.add(Ant('e', 1, (this.x + xmod), (this.y + ymod)));
+					pt = {x: this.x, y: this.y};
+					t.add( Ant('e', 1, pt) );
 				}
 			}
 		};
@@ -158,7 +137,7 @@ AntsApp.factory(
 	}
 );
 
-AntsApp.factory( 
+angular.module('Ants').factory( 
 	"Colony", ['Hill', 'Ant', 'imgSupplier', function(Hill, Ant, imgSup) {
 		function Colony(n, cr, pt) {
 			this.name = n;
@@ -166,10 +145,25 @@ AntsApp.factory(
 			this.hills = [new Hill(this.name, 5, pt.x, pt.y)];
 			this.ants = [new Ant('q', 1, pt),
 						 new Ant('s', 3, pt),
+						 new Ant('s', 3, pt),
+						 new Ant('s', 3, pt),
+						 new Ant('s', 3, pt),
+						 new Ant('w', 1, pt),
+						 new Ant('w', 1, pt),
+						 new Ant('w', 1, pt),
+						 new Ant('w', 1, pt),
+						 new Ant('w', 1, pt),
+						 new Ant('w', 1, pt),
+						 new Ant('w', 1, pt),
+						 new Ant('w', 1, pt),
+						 new Ant('w', 1, pt),
+						 new Ant('w', 1, pt),
+						 new Ant('w', 1, pt),
+						 new Ant('w', 1, pt),
 						 new Ant('w', 1, pt),
 						 new Ant('w', 1, pt),
 						 new Ant('w', 1, pt)];
-			this.assets = imgSup.prepTeamAssets(this.color);
+			this.assets = imgSup.prepTeamAssets(this);
 		}
 
 		Colony.prototype = {
@@ -179,27 +173,40 @@ AntsApp.factory(
 			hill: function(i) { return(this.hills[i]); },
 			ants: function() { return(this.ants); },
 			ant: function(i) { return(this.ants[i]); },
-			getAsset: function(n) { if (n == 'e') { return (this.assets.e); }
-									else if (n == 'w') { return (this.assets.w); }
-									else if (n == 's') { return (this.assets.s); }
-									else if (n == 'q') { return (this.assets.e); }
-								  }
+			setAsset: function(n, a) { 
+				if (n == 'e') { this.assets.e = a; }
+				else if (n == 'w') { this.assets.w = a; }
+				else if (n == 's') { this.assets.s = a; }
+				else if (n == 'q') { this.assets.q = a; }
+				else if (n == 'h') { this.assets.h = a; }
+			},	
+			getAsset: function(n) { 
+				if (n == 'e') { return (this.assets.e); }
+				else if (n == 'w') { return (this.assets.w); }
+				else if (n == 's') { return (this.assets.s); }
+				else if (n == 'q') { return (this.assets.q); }
+				else if (n == 'h') { return (this.assets.h); }
+			},
+			setAssetSRC: function(n, a) { 
+				if (n == 'e') { this.assets.e.src = a; }
+				else if (n == 'w') { this.assets.w.src = a; }
+				else if (n == 's') { this.assets.s.src = a; }
+				else if (n == 'q') { this.assets.q.src = a; }
+			},
+			getAssetSRC: function(n) { 
+				if (n == 'e') { return (this.assets.e.src); }
+				else if (n == 'w') { return (this.assets.w.src); }
+				else if (n == 's') { return (this.assets.s.src); }
+				else if (n == 'q') { return (this.assets.q.src); }
+			},
+
+			update: function() {
+				for (i = 0; i < this.ants.length; i++) {
+					this.ants[i].update();
+				} 
+			}
 		};
 
 		return( Colony );
 	} 
 ]); 
-
-/*
-	This initialized the app data for ant simulation.
-*/
-AntsApp.controller('antsCtrl', [ 'Colony', 'Hill', 'Ant', 'antsSvcs', '$scope', function(Colony, Hill, Ant, antsSvcs, $scope) {
-	$scope.teams = [ new Colony('Green', '#3CB371', antsSvcs.getPT(1280, 720)),
-					 new Colony('Blue', '#4169E1', antsSvcs.getPT(1280, 720)),
-				  	 new Colony('Red', '#FF6347', antsSvcs.getPT(1280, 720)), 
-					 new Colony('Gold', '#FFD700', antsSvcs.getPT(1280, 720)) ];
-	$scope.count = '4';
-	$scope.viewWidth = 1280;
-	$scope.viewHeight = 720;
-	$scope.world;
-}]);

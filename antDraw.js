@@ -1,51 +1,102 @@
-function colorAntImage(i, cr) {
-	
-	var canvas = document.getElementById('worldCan');
-	var width = i.width;
-	var w2 = width/2;
-	var height = i.height;
+function colorAntImage(img, cr) {
+		
+	color = hexToRgb(cr);
 
-	var context = canvas.getContext('2d');
-	context.drawImage(i, 0, 0, width, height);
+	var canvas = document.createElement("canvas");
+	var ctx = canvas.getContext('2d');
 
+	var imgW = img.width;
+	var imgH = img.height;
+	var scaleW = imgW/6;
+	var scaleH = imgH/6;
+	canvas.width = scaleW;
+	canvas.height = scaleH;
 
-	setTimeout( function() {} , 10000 );
-	var imageData = context.getImageData(0, 0, width, height);
+	ctx.drawImage(img, 0, 0, scaleW, scaleH);
 
-	for (y = 0; y < height; y++) {
-		inpos = y *width * 4;
-		outpos = inpos + w2 *4;
-		for (x = 0; x < w2; x++) {
-			r = imageData.data[inpos++];
-			g = imageData.data[inpos++];
-			b = imageData.data[inpos++];
-			a = imageData.data[inpos++];
+	var imgPixels = ctx.getImageData(0, 0, scaleW, scaleH);
 
-			if (r == g && g == b && b > 69) {
-				scale = b /255;
+	for (y = 0; y < imgPixels.height; y++) {
+		for (x = 0; x < imgPixels.width; x++) {
+			var i = (y*4) * imgPixels.width + x * 4;
+			var r = imgPixels.data[i];
+			var g = imgPixels.data[i+1];
+			var b = imgPixels.data[i+2];
+			var a = imgPixels.data[i+3];
 
-				nc = hexToRgb(cr);
-				nc.r = nc.r * scale;
-				nc.g = nc.g * scale;
-				nc.b = nc.b * scale;
+			if (r == g && g == b && r >= 32) {
+				scale = r/255;
 
-				imageData.data[outpos++] = nc.r;
-				imageData.data[outpos++] = nc.g;
-				imageData.data[outpos++] = nc.b;
-				imageData.data[outpos++] = a;
+				r = (color.r * scale);
+				g = (color.g * scale);
+				b = (color.b * scale);
 
+				imgPixels.data[i] = r;
+				imgPixels.data[i+1] = g;
+				imgPixels.data[i+2] = b;
 			}
 		}
 	}
 
-	var img = new Image(i.name); //document.createElement(i.name);
-	img.src = imageData;
+	ctx.putImageData(imgPixels, 0, 0);
 
-	return img;
+	//alert("done: " + cr);
+
+	return canvas;
 }
 
-function drawImage(ctx, x, y, i) {
-	ctx.drawImage(i, 10, 10);
+function colorHillImage(img, cr) {
+		
+	color = hexToRgb(cr);
+
+	var canvas = document.createElement("canvas");
+	var ctx = canvas.getContext('2d');
+
+	var imgW = img.width;
+	var imgH = img.height;
+	canvas.width = imgW;
+	canvas.height = imgH;
+
+	ctx.drawImage(img, 0, 0, imgW, imgH);
+
+	var imgPixels = ctx.getImageData(0, 0, imgW, imgH);
+
+	for (y = 0; y < imgPixels.height; y++) {
+		for (x = 0; x < imgPixels.width; x++) {
+			var i = (y*4) * imgPixels.width + x * 4;
+			var r = imgPixels.data[i];
+			var g = imgPixels.data[i+1];
+			var b = imgPixels.data[i+2];
+			var a = imgPixels.data[i+3];
+
+			if (r == g && g == b && r >= 32) {
+				scale = r/255;
+
+				r = (color.r * scale);
+				g = (color.g * scale);
+				b = (color.b * scale);
+
+				imgPixels.data[i] = r;
+				imgPixels.data[i+1] = g;
+				imgPixels.data[i+2] = b;
+			}
+		}
+	}
+
+	ctx.putImageData(imgPixels, 0, 0);
+
+	return canvas;
+}
+
+function drawImage(canv, x, y, r, i) {
+	ctx = canv.getContext('2d');
+
+	ctx.save();
+	ctx.translate(x, y);
+	ctx.rotate(r);
+	ctx.drawImage(i, -i.width/2, -i.height/2, i.width, i.height);
+	ctx.restore();
+
 }
 
 
