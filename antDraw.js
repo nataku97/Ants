@@ -46,7 +46,7 @@ function applyScaleAndColorToImage(img, cr, s) {
 
 function prepAntImage(img, cr) {
 	//one sixth size
-	return applyScaleAndColorToImage(img, cr, (1.0/5));
+	return applyScaleAndColorToImage(img, cr, (1.0/4));
 }
 
 function prepHillImage(img, cr) {
