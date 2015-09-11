@@ -9,10 +9,8 @@ angular.module('Ants').controller('AntsCtrl', [ 'Colony', 'Hill', 'Ant', 'locSup
 	this.viewHeight = 720;
 
 	this.teams = [ new Colony('Green', '#3CB371', locSupply.getHillSpawnPT(this.viewWidth, this.viewHeight)),
-					 new Colony('Blue', '#4169E1', locSupply.getHillSpawnPT(this.viewWidth, this.viewHeight)),
 				  	 new Colony('Red', '#FF6347', locSupply.getHillSpawnPT(this.viewWidth, this.viewHeight)),
 				  	 new Colony('Ivory', '#FFFFF0', locSupply.getHillSpawnPT(this.viewWidth, this.viewHeight)),
-				  	 new Colony('Tan', '#D2B48C', locSupply.getHillSpawnPT(this.viewWidth, this.viewHeight)),
 					 new Colony('Gold', '#FFD700', locSupply.getHillSpawnPT(this.viewWidth, this.viewHeight)) ];
 	
 	this.count = function () { return this.teams.length; };

@@ -11,6 +11,10 @@ angular.module('Ants').service('randomSupplier', function() {
 angular.module('Ants').service('locSupplier', ['randomSupplier', function(randSupply) {
 	var pt = {x: 0, y: 0};
 
+	this.getEdges = function() {
+		return { left: 0, right: 1280, top: 720, bottom: 0 };
+	};
+
 	this.getRandomDir = function() {
 		return (Math.random() * (2 * Math.PI) );
 	};

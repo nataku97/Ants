@@ -7,19 +7,18 @@ angular.module('Ants').factory(
 		function Ant(t, hp, pt) {
 			this.type = t;
 			this.hitpoints = hp;
-			
-			if (t == 'e') {
-				this.live = false;
-			}
-			else {
-				this.live = true;
-			}
 
 			var start = locSupply.getAntSpawn(pt);
 
 			this.x = start.x;
 			this.y = start.y;
 			this.dir = start.r;
+
+			//todo remove hard coding of width hieght prob remove too?
+			this.live = true;
+			if (t == 'e') {
+				this.live = false;
+			}
 		}
 
 		Ant.prototype = {
@@ -51,17 +50,22 @@ angular.module('Ants').factory(
 				this.x += Math.cos(this.dir)/2;
 				this.y += Math.cos(this.dir)/2;
 			},
+			changeDirection: function(delta) {
+				if ( (this.dir + delta) < 0) {
+					this.dir = (2*Math.PI) - delta;
+				}
+				else if ((this.dir + delta) > (2*Math.PI) ) {
+					this.dir = 0 + delta;
+				}
+				else {
+					this.dir += delta;
+				}
+			},
 			turnLeft: function() {
-				this.dir -= 0.025;
-				if (this.dir < 0) {
-					this.dir = Math.PI - 0.1;
-				} 
+				this.changeDirection(-0.025);
 			},
 			turnRight: function() {
-				this.dir += 0.025;
-				if (this.dir >= (2*Math.PI)) {
-					this.dir = 0;
-				} 
+				this.changeDirection(0.025);
 			},
 			hatch: function() {
 				if (this.type == 'e') {
@@ -85,6 +89,11 @@ angular.module('Ants').factory(
 					var d = aii.getDirection();
 
 					if (d == 'forward') {
+						edges = locSupply.getEdges();
+						if ( (this.x < edges.left || this.x > edges.right) ||
+						 	(this.y < edges.bottom || this.y > edges.top) ) {
+								this.changeDirection(Math.PI);	
+						}
 						this.moveForward();
 					}
 					else if (d == 'back') {
@@ -148,16 +157,6 @@ angular.module('Ants').factory(
 						 new Ant('s', 3, pt),
 						 new Ant('s', 3, pt),
 						 new Ant('s', 3, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
 						 new Ant('w', 1, pt),
 						 new Ant('w', 1, pt),
 						 new Ant('w', 1, pt),
