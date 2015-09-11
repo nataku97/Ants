@@ -91,6 +91,10 @@ angular.module('Ants').service('canvasPen', function() {
 		drawImage(world, ant.x, ant.y, ant.dir, t.getAsset(ant.type));
 	};
 
+	this.drawHill = function(world, hill, t) {
+		drawImage(world, hill.x, hill.y, 0.0, t.getAsset('h') );
+	};
+
 	this.drawAnts = function(world, teams) {
 		
 		var ctx = world.getContext('2d');
@@ -98,11 +102,21 @@ angular.module('Ants').service('canvasPen', function() {
 		ctx.drawImage(buffer, 0, 0);
 		buffctx.clearRect(0, 0, world.width, world.height);
 
+		//draw hills first so they have lower z order.
+		//for each team draw each hill. 
+		for (i = 0; i < teams.length; i++) {
+			for (k = 0; k < teams[i].hills.length; k++) {
+				this.drawHill(buffer, teams[i].hills[k], teams[i] );
+			}
+		}
+
+		//for each team draw each ant.
 		for (i = 0; i < teams.length; i++) {
 			for (k = 0; k < teams[i].ants.length; k++) {
 				this.drawAnt(buffer, teams[i].ants[k], teams[i] );
 			}
 		}
+
 	};
 
 });
