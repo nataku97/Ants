@@ -90,8 +90,8 @@ angular.module('Ants').factory(
 
 					if (d == 'forward') {
 						edges = locSupply.getEdges();
-						if ( (this.x < edges.left || this.x > edges.right) ||
-						 	(this.y < edges.bottom || this.y > edges.top) ) {
+						if ( (this.x < edges.west || this.x > edges.east) ||
+						 	(this.y < edges.north || this.y > edges.south) ) {
 								this.changeDirection(Math.PI);	
 						}
 						this.moveForward();

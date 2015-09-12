@@ -9,10 +9,14 @@ angular.module('Ants').service('randomSupplier', function() {
 } )
 
 angular.module('Ants').service('locSupplier', ['randomSupplier', function(randSupply) {
-	var pt = {x: 0, y: 0};
 
 	this.getEdges = function() {
-		return { left: 0, right: 1280, top: 720, bottom: 0 };
+		var mapWidthScaler = 3;
+		var mapHeightScaler = 4;
+		var mapBaseWidth = 1280;
+		var mapBaseHeight = 720;
+		return { west: 0, east: mapWidthScaler * mapBaseWidth,
+				north: 0, south: mapHeightScaler * mapBaseHeight };
 	};
 
 	this.getRandomDir = function() {
@@ -20,10 +24,9 @@ angular.module('Ants').service('locSupplier', ['randomSupplier', function(randSu
 	};
 
 	this.getHillSpawnPT = function () {
-		eds = this.getEdges();
-		pt.x = randSupply.getRandomInclude(50, eds.right-50);
-		pt.y = randSupply.getRandomInclude(50, eds.top-50);
-
+		bounds = this.getEdges();
+		var pt = {x: randSupply.getRandomInclude(50, bounds.east-50),
+				y: randSupply.getRandomInclude(50, bounds.south-50)};
 		return pt; 
 	};
 
