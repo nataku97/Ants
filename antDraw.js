@@ -52,7 +52,7 @@ function prepAntImage(img, cr) {
 function prepHillImage(img, cr) {
 	//full size for now 
 	//TODO: "JOOOHNNN plaz draw me ant hills".
-	return applyScaleAndColorToImage(img, cr, 2.2);
+	return applyScaleAndColorToImage(img, cr, 1.75);
 }
 
 function drawImage(canv, x, y, r, i) {

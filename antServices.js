@@ -19,9 +19,10 @@ angular.module('Ants').service('locSupplier', ['randomSupplier', function(randSu
 		return (Math.random() * (2 * Math.PI) );
 	};
 
-	this.getHillSpawnPT = function (w, h) {
-		pt.x = randSupply.getRandomInclude(50, w-50);
-		pt.y = randSupply.getRandomInclude(50, h-50);
+	this.getHillSpawnPT = function () {
+		eds = this.getEdges();
+		pt.x = randSupply.getRandomInclude(50, eds.right-50);
+		pt.y = randSupply.getRandomInclude(50, eds.top-50);
 
 		return pt; 
 	};
@@ -82,49 +83,6 @@ angular.module('Ants').service('imgSupplier', function() {
 
 });
 
-angular.module('Ants').service('canvasPen', function() {
-	var buffer = document.createElement("canvas");
-	var buffctx = buffer.getContext('2d');
-	
-	this.initBuffer = function() {
-		buffer.width = 1280;
-		buffer.height = 720;
-	}
-
-	this.drawAnt = function(world, ant, t) {
-		drawImage(world, ant.x, ant.y, ant.dir, t.getAsset(ant.type));
-	};
-
-	this.drawHill = function(world, hill, t) {
-		drawImage(world, hill.x, hill.y, 0.0, t.getAsset('h') );
-	};
-
-	this.drawAnts = function(world, teams) {
-		
-		var ctx = world.getContext('2d');
-		ctx.clearRect(0, 0, world.width, world.height);
-		ctx.drawImage(buffer, 0, 0);
-		buffctx.clearRect(0, 0, world.width, world.height);
-
-		//draw hills first so they have lower z order.
-		//for each team draw each hill. 
-		for (i = 0; i < teams.length; i++) {
-			for (k = 0; k < teams[i].hills.length; k++) {
-				this.drawHill(buffer, teams[i].hills[k], teams[i] );
-			}
-		}
-
-		//for each team draw each ant.
-		for (i = 0; i < teams.length; i++) {
-			for (k = 0; k < teams[i].ants.length; k++) {
-				this.drawAnt(buffer, teams[i].ants[k], teams[i] );
-			}
-		}
-
-	};
-
-});
-
 angular.module('Ants').service('antIndependantIntelligence', ['randomSupplier', function(randSupply) {
 	this.mode = ['wonder'];
 	this.direction = ['forward', 'left', 'right', 'back'];
@@ -159,15 +117,17 @@ angular.module('Ants').service('antIndependantIntelligence', ['randomSupplier', 
 }])
 
 angular.module('Ants').service('universeMachine', function() {
+	this.play = false;
 
-	this.update = function(teams) {
-		for (var i = 0; i < teams.length; i++) {
-			teams[i].update();
-		}
+	this.togglePause = function() {
+		this.play = !this.play;
 	};
 
-	this.simulationPlay = function(c) {
-		c.init();
-		setInterval(function() {c.step();} , 16);
+	this.update = function(c) {
+		if (this.play) {
+			for (var i = 0; i < teams.length; i++) {
+				c.teams[i].update();
+			}
+		}
 	};
 });
