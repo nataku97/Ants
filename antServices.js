@@ -23,6 +23,10 @@ angular.module('Ants').service('locSupplier', ['randomSupplier', function(randSu
 		return (Math.random() * (2 * Math.PI) );
 	};
 
+	this.getDirInRnage = function(min, max) {
+		return randSupply.getRandomInclude(min, max);
+	}
+
 	this.getHillSpawnPT = function () {
 		bounds = this.getEdges();
 		var pt = {x: randSupply.getRandomInclude(50, bounds.east-50),

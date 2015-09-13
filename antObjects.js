@@ -48,7 +48,7 @@ angular.module('Ants').factory(
 			},
 			moveBackward: function() {
 				this.x += Math.cos(this.dir)/2;
-				this.y += Math.cos(this.dir)/2;
+				this.y += Math.sin(this.dir)/2;
 			},
 			changeDirection: function(delta) {
 				if ( (this.dir + delta) < 0) {
@@ -60,6 +60,9 @@ angular.module('Ants').factory(
 				else {
 					this.dir += delta;
 				}
+			},
+			setDirection: function(d) {
+				this.dir = d;
 			},
 			turnLeft: function() {
 				this.changeDirection(-0.025);
@@ -90,9 +93,25 @@ angular.module('Ants').factory(
 
 					if (d == 'forward') {
 						edges = locSupply.getEdges();
-						if ( (this.x < edges.west || this.x >= edges.east-50) ||
-						 	(this.y < edges.north || this.y >= edges.south-50) ) {
-								this.changeDirection(Math.PI);	
+						if (this.x < edges.west) {
+							this.moveBackward();
+							this.setDirection(locSupply.getDirInRnage( (2*(Math.PI/3)), (4*(Math.PI/3))));
+						}
+						else if (this.x >= edges.east) {
+							this.moveBackward();
+							this.setDirection(locSupply.getDirInRnage( -(Math.PI/3), (Math.PI/3)));
+							//if (Math.random() < .5)
+							//	this.setDirection(locSupply.getDirInRnage( (5*(Math.PI/3)), (17*(Math.PI/8))));
+							//else
+							//	this.setDirection(locSupply.getDirInRnage(0, (Math.PI/3)));
+						}
+						else if (this.y < edges.north) {
+							this.moveBackward();
+							this.setDirection(locSupply.getDirInRnage( (7*(Math.PI/6)), (11*(Math.PI/6))));
+						}
+						else if (this.y >= edges.south) {
+							this.moveBackward();
+							this.setDirection(locSupply.getDirInRnage((Math.PI/6), (5*(Math.PI/6))));
 						}
 						this.moveForward();
 					}
