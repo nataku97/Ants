@@ -120,6 +120,7 @@ angular.module('Ants').service('antIndependantIntelligence', ['randomSupplier', 
 }])
 
 angular.module('Ants').service('universeMachine', function() {
+	this.start = false;
 	this.play = false;
 
 	this.togglePause = function() {

@@ -11,12 +11,18 @@ angular.module('Ants').controller('AntsCtrl', [ 'Colony', 'Hill', 'Ant', 'locSup
 	
 	this.count = function () { return this.teams.length; };
 
+	this.pause = function() { return universalLogic.play; };
+
 	this.togglePause = function () {
 		universalLogic.togglePause();
 	}
 
 	this.play = function() {
 		universalLogic.togglePause();
-		setInterval(function() { universalLogic.update(this); }, 16);
+
+		if (!universalLogic.start) {
+			universalLogic.start = true;
+			setInterval(function() { universalLogic.update(this); }, 8);
+		}
 	}
 }]);

@@ -18,16 +18,20 @@ angular.module('Ants').directive('antScreen', ['$interval', '$window', 'locSuppl
 
 		link: function(scope, element, attrs) {
 			scope.canvas = element.find('canvas')[0];
+			scope.buffer = document.createElement('canvas');
 			scope.context = scope.canvas.getContext('2d');
+			scope.buffctx = scope.buffer.getContext('2d');
 			scope.canvas.width = $window.innerWidth;
 			scope.canvas.height = $window.innerHeight - 70;
+			scope.buffer.width = $window.innerWidth;
+			scope.buffer.height = $window.innerHeight - 70;
 			var bounds = locSupply.getEdges();
 			var viewOffSetX = (bounds.east/2 - scope.canvas.width/2);
 			var viewOffSetY = (bounds.south/2 - scope.canvas.height/2);
 			var inputOffSetX = 0;
 			var inputOffSetY = 0;
 			var mouseScrollZone = 140;
-			var scrollRate = 10;
+			var scrollRate = 6;
 			var scroll = false;
 			var mx = 0;
 			var my = 0;
@@ -64,14 +68,14 @@ angular.module('Ants').directive('antScreen', ['$interval', '$window', 'locSuppl
 
 			//Draw helpers
 			drawAnt = function(ant, t) {
-				drawImage(scope.canvas, ant.x - (viewOffSetX + inputOffSetX),
+				drawImage(scope.buffer, ant.x - (viewOffSetX + inputOffSetX),
 					 ant.y - (viewOffSetY + inputOffSetY),
 					 ant.dir,
 					 t.getAsset(ant.type));
 			};
 
 			drawHill = function(hill, t) {
-				drawImage(scope.canvas, hill.x - (viewOffSetX + inputOffSetX),
+				drawImage(scope.buffer, hill.x - (viewOffSetX + inputOffSetX),
 					 hill.y - (viewOffSetY + inputOffSetY),
 					 0.0,
 					 t.getAsset('h'));
@@ -123,6 +127,8 @@ angular.module('Ants').directive('antScreen', ['$interval', '$window', 'locSuppl
 
 				//var ctx = scope.context;
 				scope.context.clearRect(0, 0, scope.canvas.width, scope.canvas.height);
+				scope.context.drawImage(scope.buffer, 0, 0, scope.canvas.width, scope.canvas.height);
+				scope.buffctx.clearRect(0, 0, scope.canvas.width, scope.canvas.height);
 				scope.context.font = "18px serif";
 				scope.context.fillText( "x: " + (viewOffSetX+inputOffSetX) +
 										", y: " + (viewOffSetY+inputOffSetY), 0, 20);
@@ -148,7 +154,7 @@ angular.module('Ants').directive('antScreen', ['$interval', '$window', 'locSuppl
 
 			scope.update = $interval(function() {
 				drawColonies();
-			}, 32);
+			}, 16);
 		}
 	}
 }]);

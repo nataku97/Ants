@@ -43,8 +43,8 @@ angular.module('Ants').factory(
 				}
 			},
 			moveForward: function() {
-				this.x -= 5*(Math.cos(this.dir)/8);
-				this.y -= 5*(Math.sin(this.dir)/8);
+				this.x -= Math.cos(this.dir);
+				this.y -= Math.sin(this.dir);
 			},
 			moveBackward: function() {
 				this.x += Math.cos(this.dir)/2;
@@ -90,8 +90,8 @@ angular.module('Ants').factory(
 
 					if (d == 'forward') {
 						edges = locSupply.getEdges();
-						if ( (this.x < edges.west || this.x > edges.east) ||
-						 	(this.y < edges.north || this.y > edges.south) ) {
+						if ( (this.x < edges.west || this.x >= edges.east-50) ||
+						 	(this.y < edges.north || this.y >= edges.south-50) ) {
 								this.changeDirection(Math.PI);	
 						}
 						this.moveForward();
