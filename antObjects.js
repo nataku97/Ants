@@ -7,19 +7,18 @@ angular.module('Ants').factory(
 		function Ant(t, hp, pt) {
 			this.type = t;
 			this.hitpoints = hp;
-			
-			if (t == 'e') {
-				this.live = false;
-			}
-			else {
-				this.live = true;
-			}
 
 			var start = locSupply.getAntSpawn(pt);
 
 			this.x = start.x;
 			this.y = start.y;
 			this.dir = start.r;
+
+			//todo remove hard coding of width hieght prob remove too?
+			this.live = true;
+			if (t == 'e') {
+				this.live = false;
+			}
 		}
 
 		Ant.prototype = {
@@ -44,24 +43,32 @@ angular.module('Ants').factory(
 				}
 			},
 			moveForward: function() {
-				this.x -= 5*(Math.cos(this.dir)/8);
-				this.y -= 5*(Math.sin(this.dir)/8);
+				this.x -= Math.cos(this.dir);
+				this.y -= Math.sin(this.dir);
 			},
 			moveBackward: function() {
 				this.x += Math.cos(this.dir)/2;
-				this.y += Math.cos(this.dir)/2;
+				this.y += Math.sin(this.dir)/2;
+			},
+			changeDirection: function(delta) {
+				if ( (this.dir + delta) < 0) {
+					this.dir = (2*Math.PI) - delta;
+				}
+				else if ((this.dir + delta) > (2*Math.PI) ) {
+					this.dir = 0 + delta;
+				}
+				else {
+					this.dir += delta;
+				}
+			},
+			setDirection: function(d) {
+				this.dir = d;
 			},
 			turnLeft: function() {
-				this.dir -= 0.025;
-				if (this.dir < 0) {
-					this.dir = Math.PI - 0.1;
-				} 
+				this.changeDirection(-0.025);
 			},
 			turnRight: function() {
-				this.dir += 0.025;
-				if (this.dir >= (2*Math.PI)) {
-					this.dir = 0;
-				} 
+				this.changeDirection(0.025);
 			},
 			hatch: function() {
 				if (this.type == 'e') {
@@ -85,6 +92,27 @@ angular.module('Ants').factory(
 					var d = aii.getDirection();
 
 					if (d == 'forward') {
+						edges = locSupply.getEdges();
+						if (this.x < edges.west) {
+							this.moveBackward();
+							this.setDirection(locSupply.getDirInRnage( (2*(Math.PI/3)), (4*(Math.PI/3))));
+						}
+						else if (this.x >= edges.east) {
+							this.moveBackward();
+							this.setDirection(locSupply.getDirInRnage( -(Math.PI/3), (Math.PI/3)));
+							//if (Math.random() < .5)
+							//	this.setDirection(locSupply.getDirInRnage( (5*(Math.PI/3)), (17*(Math.PI/8))));
+							//else
+							//	this.setDirection(locSupply.getDirInRnage(0, (Math.PI/3)));
+						}
+						else if (this.y < edges.north) {
+							this.moveBackward();
+							this.setDirection(locSupply.getDirInRnage( (7*(Math.PI/6)), (11*(Math.PI/6))));
+						}
+						else if (this.y >= edges.south) {
+							this.moveBackward();
+							this.setDirection(locSupply.getDirInRnage((Math.PI/6), (5*(Math.PI/6))));
+						}
 						this.moveForward();
 					}
 					else if (d == 'back') {
@@ -148,16 +176,6 @@ angular.module('Ants').factory(
 						 new Ant('s', 3, pt),
 						 new Ant('s', 3, pt),
 						 new Ant('s', 3, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
-						 new Ant('w', 1, pt),
 						 new Ant('w', 1, pt),
 						 new Ant('w', 1, pt),
 						 new Ant('w', 1, pt),

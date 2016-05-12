@@ -4,11 +4,12 @@
 <body ng-app="Ants"  ng-controller="AntsCtrl as ants" bgcolor="#8FBC8F">
 
 	<div> 
-		<canvas id="ViewPort" width="1280" height="720"> </canvas>
+		<ant-screen world="ants.teams"> </ant-screen>
 	</div>
 	<div>
 		<p> There are <span ng-bind="{{ants.count()}}"></span> colonies remaining. 
 			<button ng-click="ants.play()">start</button> 
+			<button ng-click="ants.togglePause()">pause</button> 
 		</p> 
 		<ul>
 			<li ng-repeat="t in ants.teams">
@@ -29,6 +30,7 @@
 </body>
 <script src="antDraw.js"></script>
 <script src="antControllers.js"></script>
+<script src="antDirectives.js"></script>
 <script src="antObjects.js"></script>
 <script src="antServices.js"></script>
 </html>

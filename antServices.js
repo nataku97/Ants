@@ -9,16 +9,28 @@ angular.module('Ants').service('randomSupplier', function() {
 } )
 
 angular.module('Ants').service('locSupplier', ['randomSupplier', function(randSupply) {
-	var pt = {x: 0, y: 0};
+
+	this.getEdges = function() {
+		var mapWidthScaler = 3;
+		var mapHeightScaler = 4;
+		var mapBaseWidth = 1280;
+		var mapBaseHeight = 720;
+		return { west: 0, east: mapWidthScaler * mapBaseWidth,
+				north: 0, south: mapHeightScaler * mapBaseHeight };
+	};
 
 	this.getRandomDir = function() {
 		return (Math.random() * (2 * Math.PI) );
 	};
 
-	this.getHillSpawnPT = function (w, h) {
-		pt.x = randSupply.getRandomInclude(50, w-50);
-		pt.y = randSupply.getRandomInclude(50, h-50);
+	this.getDirInRnage = function(min, max) {
+		return randSupply.getRandomInclude(min, max);
+	}
 
+	this.getHillSpawnPT = function () {
+		bounds = this.getEdges();
+		var pt = {x: randSupply.getRandomInclude(50, bounds.east-50),
+				y: randSupply.getRandomInclude(50, bounds.south-50)};
 		return pt; 
 	};
 
@@ -78,35 +90,6 @@ angular.module('Ants').service('imgSupplier', function() {
 
 });
 
-angular.module('Ants').service('canvasPen', function() {
-	var buffer = document.createElement("canvas");
-	var buffctx = buffer.getContext('2d');
-	
-	this.initBuffer = function() {
-		buffer.width = 1280;
-		buffer.height = 720;
-	}
-
-	this.drawAnt = function(world, ant, t) {
-		drawImage(world, ant.x, ant.y, ant.dir, t.getAsset(ant.type));
-	};
-
-	this.drawAnts = function(world, teams) {
-		
-		var ctx = world.getContext('2d');
-		ctx.clearRect(0, 0, world.width, world.height);
-		ctx.drawImage(buffer, 0, 0);
-		buffctx.clearRect(0, 0, world.width, world.height);
-
-		for (i = 0; i < teams.length; i++) {
-			for (k = 0; k < teams[i].ants.length; k++) {
-				this.drawAnt(buffer, teams[i].ants[k], teams[i] );
-			}
-		}
-	};
-
-});
-
 angular.module('Ants').service('antIndependantIntelligence', ['randomSupplier', function(randSupply) {
 	this.mode = ['wonder'];
 	this.direction = ['forward', 'left', 'right', 'back'];
@@ -141,15 +124,18 @@ angular.module('Ants').service('antIndependantIntelligence', ['randomSupplier', 
 }])
 
 angular.module('Ants').service('universeMachine', function() {
+	this.start = false;
+	this.play = false;
 
-	this.update = function(teams) {
-		for (var i = 0; i < teams.length; i++) {
-			teams[i].update();
-		}
+	this.togglePause = function() {
+		this.play = !this.play;
 	};
 
-	this.simulationPlay = function(c) {
-		c.init();
-		setInterval(function() {c.step();} , 16);
+	this.update = function(c) {
+		if (this.play) {
+			for (var i = 0; i < teams.length; i++) {
+				c.teams[i].update();
+			}
+		}
 	};
 });

@@ -46,13 +46,13 @@ function applyScaleAndColorToImage(img, cr, s) {
 
 function prepAntImage(img, cr) {
 	//one sixth size
-	return applyScaleAndColorToImage(img, cr, (1.0/6));
+	return applyScaleAndColorToImage(img, cr, (1.0/4));
 }
 
 function prepHillImage(img, cr) {
 	//full size for now 
 	//TODO: "JOOOHNNN plaz draw me ant hills".
-	return applyScaleAndColorToImage(img, cr, 1);
+	return applyScaleAndColorToImage(img, cr, 1.75);
 }
 
 function drawImage(canv, x, y, r, i) {
