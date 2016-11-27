@@ -1,0 +1,14 @@
+{
+  "name": "ants",
+  "version": "1.0.0",
+  "description": "An ant farm like simulation.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nataku97/Ants.git"
+  },
+  "author": "Nate G. (LaOwlLol)",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "angular": "^1.5.9"
+  }
+}
